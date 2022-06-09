@@ -46,7 +46,38 @@ const Create = () => {
   const storage = getStorage(firebaseApp);
   const fireStoreDb = getFirestore(firebaseApp);
 
-  const uploadImage = () => {};
+  const uploadImage = (e) => {
+    setLoading(true);
+    const videoFile = e.target.files[0];
+    const storageRef = ref(storage, `Videos/${Date.now()}-${videoFile.name}`);
+
+    const uploadTask = uploadBytesResumable(storageRef, videoFile);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const uploadProgress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(uploadProgress);
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setVideoAsset(downloadURL);
+          setLoading(false);
+          setAlert(true);
+          setAlertStatus("success");
+          setAlertIcon(<IoCheckmark fontSize={25} />);
+          setAlertMsg("Your video is uploaded to our server");
+          setTimeout(() => {
+            setAlert(false);
+          }, 4000);
+        });
+      }
+    );
+  };
   const deleteImage = () => {};
   const getDescriptionValue = () => {};
   const uploadDetails = () => {};
@@ -80,6 +111,8 @@ const Create = () => {
           type={"text"}
           _placeholder={{ color: "gray.500" }}
           fontSize={20}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
         <Flex
           justifyContent={"space-between"}
