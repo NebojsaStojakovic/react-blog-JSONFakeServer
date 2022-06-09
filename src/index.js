@@ -1,13 +1,32 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+// import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "bootstrap-css-only/css/bootstrap.min.css";
-import "mdbreact/dist/css/mdb.css";
-const root = ReactDOM.createRoot(document.getElementById("root"));
+import { BrowserRouter as Router } from "react-router-dom";
+import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
+
+import { theme } from "./theme";
+
+import { createRoot } from "react-dom/client";
+const container = document.getElementById("root");
+const root = createRoot(container); // createRoot(container!) if you use TypeScript
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <ChakraProvider>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <Router>
+      <App />
+    </Router>
+  </ChakraProvider>
 );
+
+// const root = ReactDOM.createRoot(document.getElementById("root"));
+// root.render(
+//   <React.StrictMode>
+//     <ChakraProvider>
+//       <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+//       <Router>
+//         <App />
+//       </Router>
+//     </ChakraProvider>
+//   </React.StrictMode>
+// );

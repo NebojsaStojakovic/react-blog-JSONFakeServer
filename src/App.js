@@ -1,26 +1,28 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import About from "./pages/About";
-import AddEditBlog from "./pages/AddEditBlog";
-import Blog from "./pages/Blog";
-import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
+import { useEffect, useState } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import Home from "./container/Home";
+import Login from "./container/Login";
+import { fetchUser, userAccessToken } from "./utils/fetchUser";
 
 const App = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = userAccessToken();
+    if (!accessToken) {
+      navigate("/login", { replace: true });
+    } else {
+      const [userInfo] = fetchUser();
+      setUser(userInfo);
+    }
+  }, []);
+
   return (
-    <BrowserRouter>
-      <div className='App'>
-        <ToastContainer />
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/addBlog' element={<AddEditBlog />} />
-          <Route path='/editBlog/:id' element={<AddEditBlog />} />
-          <Route path='/blog/:id' element={<Blog />} />
-          <Route path='/about' element={<About />} />
-          <Route path='*' element={<NotFound />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <Routes>
+      <Route path='login' element={<Login />} />
+      <Route path='/*' element={<Home user={user} />} />
+    </Routes>
   );
 };
 
