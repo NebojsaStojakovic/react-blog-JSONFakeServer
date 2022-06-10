@@ -13,6 +13,7 @@ import { categories } from "../data";
 
 const Home = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <>
       <Navbar
@@ -42,7 +43,7 @@ const Home = ({ user }) => {
             <Route path='/' element={<Feed />} />
             <Route path='/category/:categoryId' element={<Feed />} />
             <Route path='/create' element={<Create />} />
-            <Route path='/videoDetail/:videoId' element={<VideoPin />} />
+            <Route path='/videoDetail/:videoId' element={<VideoPinDetail />} />
             <Route
               path='/search'
               element={<Search searchTerm={searchTerm} />}
