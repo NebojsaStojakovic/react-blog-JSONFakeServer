@@ -78,9 +78,62 @@ const Create = () => {
       }
     );
   };
-  const deleteImage = () => {};
-  const getDescriptionValue = () => {};
-  const uploadDetails = () => {};
+  const deleteImage = () => {
+    const deleteRef = ref(storage, videoAsset);
+    deleteObject(deleteRef)
+      .then(() => {
+        setVideoAsset(null);
+        setAlert(true);
+        setAlertStatus("error");
+        setAlertIcon(<IoWarning fontSize={25} />);
+        setAlertMsg("Your video was removed from our server");
+        setTimeout(() => {
+          setAlert(false);
+        }, 4000);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  const getDescriptionValue = () => {
+    if (editorRef.current) {
+      console.log(editorRef.current.getContent());
+      setDescription(editorRef.current.getContent());
+    }
+  };
+  const uploadDetails = async () => {
+    try {
+      setLoading(true);
+      if (!title && !category && !videoAsset) {
+        setAlert(true);
+        setAlertStatus("error");
+        setAlertIcon(<IoWarning fontSize={25} />);
+        setAlertMsg("Required Fields are missing!");
+        setTimeout(() => {
+          setAlert(false);
+        }, 4000);
+        setLoading(false);
+      } else {
+        const data = {
+          id: `${Date.now()}`,
+          title: title,
+          userId: userInfo?.uid,
+          category: category,
+          location: location,
+          videoUrl: videoAsset,
+          description: description,
+        };
+
+        await setDoc(doc(fireStoreDb, "videos", `${Date.now()}`), data);
+        setLoading(false);
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {}, [title, location, description, category]);
   return (
     <Flex
       justifyContent={"center"}
@@ -102,6 +155,9 @@ const Create = () => {
         justifyContent={"center"}
         gap={2}
       >
+        {alert && (
+          <AlertMsg status={alertStatus} msg={alertMsg} icon={alertIcon} />
+        )}
         <Input
           variant={"flushed"}
           placeholder='Title'
